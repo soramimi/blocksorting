@@ -8,9 +8,15 @@
 #include <cassert>
 #include <vector>
 
+template<typename T>
+struct Parameter {
+  std::vector<T> dat;
+  bool decode;
+};
+
 // T doit etre une representation d'un octet
 template<typename T>
-std::vector<T> parse( int argc, char *argv[] )
+Parameter<T> parse( int argc, char *argv[] )
 {
   const std::size_t BUFFER_SIZE = 1024; // pour remplir le vector
 
@@ -27,7 +33,7 @@ std::vector<T> parse( int argc, char *argv[] )
     exit(EXIT_FAILURE);
   }
 
-  std::vector<T> output;
+  std::vector<T> stream;
 
   try
   {
@@ -44,7 +50,7 @@ std::vector<T> parse( int argc, char *argv[] )
       if(std::ferror(stdin) && !std::feof(stdin))
         throw std::runtime_error(std::strerror(errno));
 
-      output.insert(output.end(), buf.data(), buf.data() + len);
+      stream.insert(stream.end(), buf.data(), buf.data() + len);
     }
   }
   catch(std::exception const& e)
@@ -53,5 +59,5 @@ std::vector<T> parse( int argc, char *argv[] )
     exit(EXIT_FAILURE);
   }
 
-  return output;
+  return { std::move(stream), decode };
 }
