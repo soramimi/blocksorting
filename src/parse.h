@@ -8,6 +8,10 @@
 #include <cassert>
 #include <vector>
 
+namespace {
+  using octet = uint8_t;
+}
+
 template<typename T>
 struct Parameter {
   std::vector<T> dat;

@@ -15,8 +15,6 @@
 #include "parse.h"
 
 namespace {
-  using octet = uint8_t;
-
   struct Sequence {
     const std::vector<octet>& _in;
     int                       _offset;
@@ -113,9 +111,7 @@ namespace bwt {
     std::iota(indices.begin(), indices.end(), 0);
 
     std::stable_sort(indices.begin(), indices.end(),
-                     [&] ( int a, int b ) {
-                       return dat[a] < dat[b];
-                     });
+                     [&] ( int a, int b ) { return dat[a] < dat[b]; });
 
     const auto lp = [&] (int i) { return dat[indices[i]]; };
     int p = idx;
