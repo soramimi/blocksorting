@@ -27,7 +27,7 @@ namespace {
 
     octet operator[](uint k) const
     {
-      const uint idx = ( _offset + k ) % _in.size(); // size() est O(1)
+      const uint idx = ( _offset + k ) % _in.size(); // size() O(1)
       return _in[idx];
     }
 
@@ -39,17 +39,16 @@ namespace {
       for(i = 0; i < a._in.size(); i++)
         if(a[i] == b[i])
           continue;
-
-      return a[i] < b[i];
+        else
+          return a[i] < b[i];
+      assert(false && "ill-formed call, undefined behavior");
+      return false;
     }
 
     friend std::ostream& operator<<(std::ostream& o, const Sequence& a)
     {
-      //o << "<< debut debug affichage \n[" << std::endl;
       for(uint i = 0; i < a._in.size(); i++)
         o << ( isprint(a[i] )? char(a[i]) : char(47) );
-      //o << "\n]\n<< fin debug affichage" << std::endl;
-
       return o;
     }
   };
@@ -57,44 +56,76 @@ namespace {
 
 namespace bwt {
 
+  //
+  // Encode
+  //
   std::vector<octet>
-  encode(std::vector<octet>& dat)
+  encode(const std::vector<octet>& dat)
   {
     std::vector<int> indices ( dat.size() );
     std::iota(indices.begin(), indices.end(), 0);
 
-    std::sort(indices.begin(), indices.end(),
+    std::sort(indices.begin(), indices.end(), // O(nlogn)
               [&] (int lhs, int rhs) {
                 Sequence a { dat, lhs };
                 Sequence b { dat, rhs };
                 return a < b;
               });
 
-    uint idx = std::distance(indices.begin(),
-                            std::find(indices.begin(), indices.end(), 0));
+    const uint idx = std::distance(indices.begin(),
+                                   std::find(indices.begin(), indices.end(), 0)); // O(n)
 
-    std::clog << Sequence(dat, indices[idx]) << std::endl;
-    for(uint i = 0; i < indices.size(); ++i) {
-      int k = indices[i];
-      std::clog << (idx==i?"> ":"") << k << " : "
-                << Sequence(dat, k) << std::endl;
-    }
+    std::vector<octet> out ( dat.size() + sizeof idx );
 
-    std::vector<octet> out ( dat.size() );
+    // out index
+    octet bytes[sizeof idx];
+    std::copy(reinterpret_cast<const octet*>(&idx),
+              reinterpret_cast<const octet*>(&idx) + sizeof idx,
+              bytes);
 
+    for(std::size_t i = 0; i < sizeof idx; i++)
+      out[i] = bytes[i];
+
+    // out sequence
     const uint last = dat.size() - 1;
+    const uint dcl  = sizeof(idx);
     for(uint i = 0; i < dat.size(); i++) {
       Sequence curr { dat, indices[i] };
-      out[i] = curr[last];
+      out[i+dcl] = curr[last];
     }
 
     return out;
   }
 
+  //
+  // Decode
+  //
   std::vector<octet>
   decode(std::vector<octet>& dat)
   {
-    auto out = dat;
+    // read the index
+    const uint* ptridx = reinterpret_cast<const uint*>(dat.data());
+    const uint idx = *ptridx;
+    dat.erase(dat.begin(), dat.begin() + sizeof idx);
+
+    // build the output
+    std::vector<int> indices ( dat.size() );
+    std::iota(indices.begin(), indices.end(), 0);
+
+    std::stable_sort(indices.begin(), indices.end(),
+                     [&] ( int a, int b ) {
+                       return dat[a] < dat[b];
+                     });
+
+    const auto lp = [&] (int i) { return dat[indices[i]]; };
+    int p = idx;
+
+    std::vector<octet> out(dat.size());
+    for(uint i = 0; i < dat.size(); i++) {
+      out[i] = lp(p);
+      p = indices[p];
+    }
+
     return out;
   }
 }
@@ -110,12 +141,8 @@ int main( int argc, char *argv[] )
   else
     out = bwt::encode(input.dat);
 
-  // out the result to std::cout
-  std::cerr << "<< end of the process" << std::endl;
-  std::clog << Sequence{ out, 0 } << std::endl;
-
-  // std::copy(out.begin(), out.end(),
-  //           std::ostream_iterator<octet>(std::cout));
+  std::copy(out.begin(), out.end(),
+            std::ostream_iterator<octet>(std::cout));
 
   return EXIT_SUCCESS;
 }
