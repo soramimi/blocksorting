@@ -15,7 +15,16 @@
 
 #include "parse.h"
 
-namespace bwt {
+namespace mtf {
+  inline
+  void move_to_front(std::vector<octet>& in, int idx)
+  {
+    const octet tmp = in[idx];
+    for(int i = idx - 1; i >= 0; i--)
+      in[i+1] = in[i];
+    in[0] = tmp;
+  }
+
   //
   // Encode
   //
@@ -31,8 +40,8 @@ namespace bwt {
     for(octet oct: dat) {
       int idx = std::distance(alph.begin(),
                               std::find(alph.begin(), alph.end(), oct)); // O(n)
+      move_to_front(alph, idx);
       out.emplace_back(idx);
-      std::iter_swap(alph.begin(), alph.begin() + idx);
     }
 
     return out; // rvo
@@ -52,7 +61,7 @@ namespace bwt {
 
     for(octet oct: dat) {
       out.emplace_back(alph[oct]);
-      std::iter_swap(alph.begin(), alph.begin() + oct);
+      move_to_front(alph, oct);
     }
 
     return out; // rvo
@@ -66,9 +75,9 @@ int main( int argc, char *argv[] )
   std::vector<octet> out;
 
   if (input.decode)
-    out = bwt::decode(input.dat);
+    out = mtf::decode(input.dat);
   else
-    out = bwt::encode(input.dat);
+    out = mtf::encode(input.dat);
 
   std::copy(out.begin(), out.end(),
             std::ostream_iterator<octet>(std::cout));
