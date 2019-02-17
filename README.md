@@ -2,6 +2,7 @@
 
 Information de ma plateforme:
 
+```
 Intel(R) Core(TM) i5-4200M CPU @ 2.50GHz
 
 $ uname -a
@@ -12,6 +13,7 @@ gcc (Debian 8.2.0-4) 8.2.0
 
 $ make --version
 GNU Make 4.2.1
+```
 
 ## Rendu
 
@@ -24,7 +26,7 @@ L'equilibreur de probabilite n'a pas ete code par manque de temps.
 Je pense que le codage arithmetique aurait ete le plus adapte dans notre cas.
 
 Arborescence du rendu:
-
+```
 .
 ├── bin
 ├── compress.sh     # compresseur utilisant la suite bwt: mtf: rle
@@ -39,7 +41,7 @@ Arborescence du rendu:
 │   ├── parse.h     # petit utilitaire pour la mise en forme de l'entree
 │   └── rle.cpp     # version specifique de rle comme demande
 └── uncompress.sh   # decompresseur utilisant la suite inverse du compresseur rle: mtf: bwt
-
+```
 ## Utilisation des programmes
 
 Pour utiliser bwt, rle et mtf :
@@ -49,11 +51,11 @@ Pour utiliser bwt, rle et mtf :
 ## Resultats
 
 Compression des fichiers ctc.txt et LICENSE avec bwt:mtf:rle
-
+```
         avant   apres   taux de compression
 ctc.txt 117K    77K     0.65
 LICENSE 35K     25K     0.71
-
+```
 J'ai essaye avec une image de Lena.
 Le resultat est mauvais (258K avant compression vs 260K apres compression).
 
@@ -63,7 +65,7 @@ Il faudrait introduire le parcours sous forme de courbe de Peano durant la phase
 ## Bench
 
 Ce que j'obtiens sur ma machine lors de l'execution de demo.sh
-
+```
 	[Bench test]
 
 command executed: perf_4.18 stat -r 5 -- ./compress.sh ctc.txt
@@ -95,7 +97,7 @@ command executed: perf_4.18 stat -r 5 -- ./uncompress.sh ctc.txt.mybz
            378,674      branch-misses             #    1.38% of all branches          ( +-  0.15% )
 
           0.022663 +- 0.000724 seconds time elapsed  ( +-  3.19% )
-
+```
 On remarque que la compression prend bien plus de temps que la decompression, tel qu'on s'y attend (pour bwt)
 
 ## Triturer les algos
