@@ -45,10 +45,6 @@ namespace rle {
 
         out.emplace_back(0);
         out.emplace_back(nbzeros);
-        // std::clog << "\n=+=\t["
-        //           << int(nbzeros)
-        //           << "]"
-        //           << std::endl;
       }
     }
 

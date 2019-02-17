@@ -1,20 +1,20 @@
 CC       = g++
-CCFLAGS   = -g -Wall -Werror -Wextra -pedantic -std=c++11 -Wno-unused-parameter
+CCFLAGS  = -O3 -Wall -Werror -Wextra -pedantic -std=c++11 -Wno-unused-parameter
 
-LFLAGS   = -lrt -lm
+LFLAGS   =
 
 SRCDIR   = src
 OBJDIR   = obj
 BINDIR   = bin
 
-SOURCES  := $(wildcard $(SRCDIR)/*.c)
+SOURCES  := $(wildcard $(SRCDIR)/*.cpp)
 INCLUDES := $(wildcard $(SRCDIR)/*.h)
-BINFILES  := $(SOURCES:$(SRCDIR)/%.c=$(BINDIR)/%)
+BINFILES  := $(SOURCES:$(SRCDIR)/%.cpp=$(BINDIR)/%)
 rm       = rm -f
 
 all: $(BINFILES)
 
-$(BINFILES): $(BINDIR)/% : $(SRCDIR)/%.c
+$(BINFILES): $(BINDIR)/% : $(SRCDIR)/%.cpp
 	$(CC) $(CCFLAGS) $(LFLAGS) $< -o $@
 
 .PHONY: clean
