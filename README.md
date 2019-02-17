@@ -1,9 +1,7 @@
 # Block Sorting
 
-Information de ma plateforme:
-
 ```
-Intel(R) Core(TM) i5-4200M CPU @ 2.50GHz
+bench done on : Intel(R) Core(TM) i5-4200M CPU @ 2.50GHz
 
 $ uname -a
 Linux pclt 4.17.0-3-amd64 #1 SMP Debian 4.17.17-1 (2018-08-18) x86_64 GNU/Linux
